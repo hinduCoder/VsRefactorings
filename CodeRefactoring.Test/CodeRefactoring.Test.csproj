@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <ApplicationIcon />
+    <AssemblyName>CodeRefactoring.Test</AssemblyName>
+    <RootNamespace>CodeRefactoring.Test</RootNamespace>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="TestCases\Test1.expected.cs" />
+    <Compile Remove="TestCases\Test1.original.cs" />
+    <Compile Remove="TestCases\Test2.expected.cs" />
+    <Compile Remove="TestCases\Test2.original.cs" />
+    <Compile Remove="TestCases\Test3.expected.cs" />
+    <Compile Remove="TestCases\Test3.original.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="xunit.runner.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="TestCases\Test3.expected.cs" />
+    <EmbeddedResource Include="TestCases\Test3.original.cs" />
+    <EmbeddedResource Include="TestCases\Test2.expected.cs" />
+    <EmbeddedResource Include="TestCases\Test2.original.cs" />
+    <EmbeddedResource Include="TestCases\Test1.expected.cs" />
+    <EmbeddedResource Include="TestCases\Test1.original.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="2.9.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.analyzers" Version="0.10.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CodeRefactoring\CodeRefactoring\CodeRefactoring.csproj" />
+  </ItemGroup>
+
+</Project>
