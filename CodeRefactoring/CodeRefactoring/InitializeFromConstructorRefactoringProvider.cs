@@ -54,7 +54,8 @@ namespace CodeRefactoring
 
                 if (constructor == null)
                 {
-                    constructor1 = CreateConstructor(classDeclaration, ref newRoot);
+                    constructor1 = CreateConstructor(classDeclaration);
+                    newRoot = newRoot.ReplaceNode(classDeclaration, classDeclaration.WithMembers(classDeclaration.Members.Add(constructor1)));
                 }
                 var newConstructor = constructor1.AddParameterListParameters(newParameter);
 
@@ -70,27 +71,26 @@ namespace CodeRefactoring
                                 : SyntaxFactory.IdentifierName(variableIdentifier)),
                             SyntaxFactory.IdentifierName(newParameter.Identifier))));
 
-                newRoot = newRoot.ReplaceNode(constructor1, newConstructor);
-
+                newRoot = newRoot.ReplaceNode(newRoot.DescendantNodes().OfType<ConstructorDeclarationSyntax>().First(), newConstructor);
+                
                 return await Formatter.FormatAsync(context.Document.WithSyntaxRoot(newRoot), cancellationToken: context.CancellationToken);
-
             }));
         }
 
-        private static ConstructorDeclarationSyntax CreateConstructor(ClassDeclarationSyntax classDeclaration, ref SyntaxNode newRoot)
+        private static ConstructorDeclarationSyntax CreateConstructor(ClassDeclarationSyntax classDeclaration)
         {
-            ConstructorDeclarationSyntax newConstructor = SyntaxFactory.ConstructorDeclaration(new SyntaxList<AttributeListSyntax>(),
-                                    SyntaxFactory.TokenList(
-                                        SyntaxFactory.Token(
-                                            SyntaxFactory.TriviaList(),
-                                            SyntaxKind.PublicKeyword,
-                                            SyntaxFactory.TriviaList(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")))),
-                                    classDeclaration.Identifier,
-                                    SyntaxFactory.ParameterList(),
-                                    null,
-                                    SyntaxFactory.Block());
-            var newClassDeclaration = classDeclaration.AddMembers(newConstructor);
-            newRoot = newRoot.ReplaceNode(classDeclaration, newClassDeclaration);
+            ConstructorDeclarationSyntax newConstructor = 
+                SyntaxFactory.ConstructorDeclaration(
+                    new SyntaxList<AttributeListSyntax>(),
+                    SyntaxFactory.TokenList(
+                        SyntaxFactory.Token(
+                            SyntaxFactory.TriviaList(),
+                            SyntaxKind.PublicKeyword,
+                            SyntaxFactory.TriviaList(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")))),
+                    classDeclaration.Identifier.WithoutTrivia(),
+                    SyntaxFactory.ParameterList(),
+                    null,
+                    SyntaxFactory.Block()).WithLeadingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.EndOfLineTrivia, Environment.NewLine)));
             return newConstructor;
         }
     }

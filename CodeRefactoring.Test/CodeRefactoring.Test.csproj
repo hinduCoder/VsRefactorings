@@ -16,6 +16,8 @@
     <Compile Remove="TestCases\Test2.original.cs" />
     <Compile Remove="TestCases\Test3.expected.cs" />
     <Compile Remove="TestCases\Test3.original.cs" />
+    <Compile Remove="TestCases\Test4.expected.cs" />
+    <Compile Remove="TestCases\Test4.original.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestCases\Test4.expected.cs" />
+    <EmbeddedResource Include="TestCases\Test4.original.cs" />
     <EmbeddedResource Include="TestCases\Test3.expected.cs" />
     <EmbeddedResource Include="TestCases\Test3.original.cs" />
     <EmbeddedResource Include="TestCases\Test2.expected.cs" />
