@@ -43,12 +43,14 @@ namespace CodeRefactoring
 
             var index = argumentSyntaxNode.Parent.ChildNodes().ToList().FindIndex(x => x.Equals(argumentSyntaxNode));
 
-
-            context.AddItem(CompletionItem.Create(GetCompletionDisplayText(callingMethodSymbol.Parameters[index].Type),
-                null, null,
-                ImmutableDictionary.Create<string, string>(),
-                ImmutableArray.Create(WellKnownTags.Method),
-                CompletionItemRules.Create(formatOnCommit: true, matchPriority: MatchPriority.Preselect)));
+            if (index < callingMethodSymbol.Parameters.Length)
+            {
+                context.AddItem(CompletionItem.Create(GetCompletionDisplayText(callingMethodSymbol.Parameters[index].Type),
+                    null, null,
+                    ImmutableDictionary.Create<string, string>(),
+                    ImmutableArray.Create(WellKnownTags.Method),
+                    CompletionItemRules.Create(formatOnCommit: true, matchPriority: MatchPriority.Preselect)));
+            }
 
             if (index == 0)
             {
