@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="CodeRefactoring..fdc33cc5-1acb-49a1-ad50-ea1f43dca8b1" Version="1.0" Language="en-US" Publisher="hinduCoder"/>
+        <Identity Id="CodeRefactoring..fdc33cc5-1acb-49a1-ad50-ea1f43dca8b1" Version="1.2" Language="en-US" Publisher="hinduCoder"/>
         <DisplayName>CodeRefactoring</DisplayName>
-        <Description xml:space="preserve">This is a sample code refactoring extension for the .NET Compiler Platform ("Roslyn").</Description>
+        <Description xml:space="preserve">Refactorings what I wantC</Description>
         <Preview>true</Preview>
     </Metadata>
     <Installation>
