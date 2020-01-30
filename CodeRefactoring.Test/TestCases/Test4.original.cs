@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TestProject
 {
-    public class HUY
+    public class Foo
     {
         private readonly string name;
     }

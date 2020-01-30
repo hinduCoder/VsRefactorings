@@ -51,19 +51,19 @@ namespace CodeRefactoring.Test
         {
             var project = Factory.CreateProject(input);
 
-            var huyClass = await GetHuyClass(project);
+            var fooClass = await GetFooClass(project);
             var operations = await Run<InitializeFromConstructorRefactoringProvider>(
                     project.SingleDocument(),
-                    huyClass.DescendantNodes().OfType<FieldDeclarationSyntax>().First().Span);
+                    fooClass.DescendantNodes().OfType<FieldDeclarationSyntax>().First().Span);
 
             var newProject = project.ApplyOperation(operations[0]);
             var newSrc = newProject.SingleDocument().GetTextAsync().Result.ToString();
 
             Assert.Equal(expectedResult, newSrc);
 
-            async Task<ClassDeclarationSyntax> GetHuyClass(Project project)
+            async Task<ClassDeclarationSyntax> GetFooClass(Project project)
             {
-                return (await project.SingleDocument().NodesOfType<ClassDeclarationSyntax>()).Single(n => n.Identifier.Text == "HUY");
+                return (await project.SingleDocument().NodesOfType<ClassDeclarationSyntax>()).Single(n => n.Identifier.Text == "Foo");
             }
         }
 

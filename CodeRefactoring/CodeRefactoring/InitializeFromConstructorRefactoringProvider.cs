@@ -3,14 +3,12 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeRefactorings;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Options;
 using System;
-using System.Collections.Generic;
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace CodeRefactoring
 {
@@ -20,15 +18,13 @@ namespace CodeRefactoring
         public override async Task ComputeRefactoringsAsync(CodeRefactoringContext context)
         {
             var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken);
-            
+            if (root == null)
+                return;
             var node = root.FindNode(context.Span);
 
-            while (!(node is FieldDeclarationSyntax) && node != null)
-                node = node.Parent;
-
-            if (node == null)
+            var fieldNode = node.AncestorsAndSelf().OfType<FieldDeclarationSyntax>().FirstOrDefault();
+            if (fieldNode == null)
                 return;
-            var fieldNode = (FieldDeclarationSyntax)node;
 
             if (fieldNode.Declaration.Variables[0].Initializer != null)
                 return;
@@ -41,11 +37,11 @@ namespace CodeRefactoring
 
             context.RegisterRefactoring(CodeAction.Create("Initialize from contstructor", async token =>
             {
-                var newParameter = SyntaxFactory.Parameter(
-                    new SyntaxList<AttributeListSyntax>(), 
-                    SyntaxFactory.TokenList(), 
-                    fieldNode.Declaration.Type, 
-                    SyntaxFactory.Identifier(variableIdentifier.Text.TrimStart('_')),
+                var newParameter = Parameter(
+                    new SyntaxList<AttributeListSyntax>(),
+                    TokenList(), 
+                    fieldNode.Declaration.Type,
+                    Identifier(variableIdentifier.Text.TrimStart('_')),
                     null);
                 var classDeclaration = (ClassDeclarationSyntax)fieldNode.Parent;
                 
@@ -60,16 +56,16 @@ namespace CodeRefactoring
                 var newConstructor = constructor1.AddParameterListParameters(newParameter);
 
                 newConstructor = newConstructor.AddBodyStatements(
-                    SyntaxFactory.ExpressionStatement(
-                        SyntaxFactory.AssignmentExpression(
+                    ExpressionStatement(
+                        AssignmentExpression(
                             SyntaxKind.SimpleAssignmentExpression,
                             (newParameter.Identifier.Text == variableIdentifier.Text
-                                ? (ExpressionSyntax)SyntaxFactory.MemberAccessExpression(
+                                ? (ExpressionSyntax)MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
-                                    SyntaxFactory.ThisExpression(),
-                                    SyntaxFactory.IdentifierName(variableIdentifier))
-                                : SyntaxFactory.IdentifierName(variableIdentifier)),
-                            SyntaxFactory.IdentifierName(newParameter.Identifier))));
+                                    ThisExpression(),
+                                    IdentifierName(variableIdentifier))
+                                : IdentifierName(variableIdentifier)),
+                            IdentifierName(newParameter.Identifier))));
 
                 newRoot = newRoot.ReplaceNode(newRoot.DescendantNodes().OfType<ConstructorDeclarationSyntax>().First(), newConstructor);
                 
@@ -79,18 +75,12 @@ namespace CodeRefactoring
 
         private static ConstructorDeclarationSyntax CreateConstructor(ClassDeclarationSyntax classDeclaration)
         {
-            ConstructorDeclarationSyntax newConstructor = 
-                SyntaxFactory.ConstructorDeclaration(
-                    new SyntaxList<AttributeListSyntax>(),
-                    SyntaxFactory.TokenList(
-                        SyntaxFactory.Token(
-                            SyntaxFactory.TriviaList(),
-                            SyntaxKind.PublicKeyword,
-                            SyntaxFactory.TriviaList(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")))),
-                    classDeclaration.Identifier.WithoutTrivia(),
-                    SyntaxFactory.ParameterList(),
-                    null,
-                    SyntaxFactory.Block()).WithLeadingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.EndOfLineTrivia, Environment.NewLine)));
+            ConstructorDeclarationSyntax newConstructor =
+                ConstructorDeclaration(classDeclaration.Identifier)
+                    .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
+                    .WithBody(Block())
+                    .NormalizeWhitespace()
+                    .WithLeadingTrivia(SyntaxTrivia(SyntaxKind.EndOfLineTrivia, Environment.NewLine));
             return newConstructor;
         }
     }

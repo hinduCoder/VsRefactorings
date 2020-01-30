@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace TestProject
 {
-    public class HUY
+    public class Foo
     {
         private readonly int length;
         private readonly string name;
 
-        public HUY(string name, int length)
+        public Foo(string name, int length)
         {
             this.name = name;
             this.length = length;
